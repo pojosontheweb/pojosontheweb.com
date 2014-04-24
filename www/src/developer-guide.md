@@ -1,4 +1,4 @@
-Title:  Woko Developer Guide
+Title:  Woko: Developer Guide
 Author: Rémi Vankeisbelck 
   Alexis Boissonnat
 CSS: css/bootstrap.css

@@ -1,4 +1,4 @@
-Title:  Woko Tutorial
+Title:  Woko: Tutorial
 Author: Rémi Vankeisbelck
   Alexis Boissonnat
 CSS: css/bootstrap.css
