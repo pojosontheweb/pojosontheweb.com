@@ -1,18 +1,20 @@
 Title:  Woko Tutorial
-Author: Rémi Vankeisbelck 
+Author: Rémi Vankeisbelck
   Alexis Boissonnat
-CSS: bootstrap.css
-CSS: doko.css
+CSS: css/bootstrap.css
+CSS: css/doko.css
 HTML header:  <script type="text/javascript"
-    src="jquery.min.js">
+    src="js/jquery.min.js">
     </script>
 HTML header:  <script type="text/javascript"
-    src="bootstrap.js">
+    src="js/bootstrap.js">
     </script>
-  
-# Woko Tutorial  
-  
-## About
+
+{{top-nav.html}}
+
+<h1 class="page-header">
+	Woko Tutorial
+</h1>
 
 This tutorial aims at covering the main aspects of Woko through practical examples.
 
