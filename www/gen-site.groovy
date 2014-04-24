@@ -46,6 +46,12 @@ new File(srcDir).listFiles().each { File f ->
                 nameWithoutExtension = nameWithoutExtension.substring(0, subDotIndex)
             }
 
+            println "->$f.absolutePath"
+            println "nameWithoutExtension:$nameWithoutExtension"
+            println "templateName:$templateName"
+
+            return
+
             // patch top nav
             def binding = [
                 name: nameWithoutExtension
@@ -57,7 +63,8 @@ new File(srcDir).listFiles().each { File f ->
             String fileText = f.text
             String updatedText = fileText.replaceAll(/\{\{top-nav\.html}}/, patchedTopNav)
             println "patched : " + (f.absolutePath + ".patched.md")
-            File patchedFile = new File(f.absolutePath + ".patched.md")
+            String patchedFileName = f.parent.absolutePath + File.separator + nameWithoutExtension + ".patched.md"
+            File patchedFile = new File(patchedFileName)
             try {
                 patchedFile.text = updatedText
                 def command = "./doc2html.sh $nameWithoutExtension $templateName"
