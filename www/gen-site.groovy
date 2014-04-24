@@ -7,7 +7,6 @@
 import org.apache.commons.io.FileUtils
 import groovy.text.SimpleTemplateEngine
 
-
 String scriptDir = new File(getClass().protectionDomain.codeSource.location.path).parent
 
 // create target dir

@@ -1,5 +1,5 @@
 #right-nav {
-	margin-top: 24px;
+	margin-top: 22px;
 }
 
 #right-nav .nav ul {
@@ -38,19 +38,11 @@
 	display: block;
 }
 
-#woko3d {
-	padding-top: 20px;
-}
-
 #top-nav {
 	margin-top: 20px;
 }
 
-.dropdown.links {
-	
-}
-
-header.page-header {
+h1.page-header {
 	font-size: 48px;
 	margin-top: 10px;
 }

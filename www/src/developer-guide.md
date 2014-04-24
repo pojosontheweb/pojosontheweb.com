@@ -12,9 +12,9 @@ HTML header:  <script type="text/javascript"
 
 {{top-nav.html}}
 
-<header class="page-header">
+<h1 class="page-header">
 	Woko Developer Guide
-</header>
+</h1>
 
 # Architecture
 

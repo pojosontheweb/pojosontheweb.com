@@ -95,7 +95,10 @@
 		
 		<script type="text/javascript">
 			$(function() {
-				$('body').scrollspy({ target: '#right-nav' });
+				$('body').scrollspy({
+                    offset: 30,
+                    target: '#right-nav'
+                });
 			});
 		</script>
 	</xsl:template>	
