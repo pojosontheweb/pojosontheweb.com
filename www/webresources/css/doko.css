@@ -88,7 +88,14 @@ span.title-img {
     padding-left: 48px;
 }
 
-.key-points h2 {
+figure {
+    text-align: center;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+figure figcaption {
+    font-size: 0.8em;
 }
 
 .key-points h2.persistence span.title-img {

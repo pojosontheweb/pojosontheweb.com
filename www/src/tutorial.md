@@ -1,15 +1,4 @@
 Title:  Woko: Tutorial
-Author: Rémi Vankeisbelck
-  Alexis Boissonnat
-CSS: css/bootstrap.css
-CSS: css/doko.css
-HTML header:  <script type="text/javascript"
-    src="js/jquery.min.js">
-    </script>
-HTML header:  <script type="text/javascript"
-    src="js/bootstrap.js">
-    </script>
-
 {{top-nav.html}}
 
 <h1 class="page-header">
@@ -17,25 +6,28 @@ HTML header:  <script type="text/javascript"
 </h1>
 
 This tutorial aims at covering the main aspects of Woko through practical examples.
+We'll be using the default "Reference Implementation" (hibernate etc.), but the same concepts applies to other implementations of `ObjectStore`, `UserManager` etc.
 
-We'll be using the default "Reference Implementation" (hibernate etc.), but the same concepts applies to other implementations of `ObjectStore`, `UserManager` etc. 
+For the impatient/lazy, we also have screencasts for this tutorial :
 
-# Environment setup
+* [Part 1](http://vimeo.com/38268737) : project init, out-of the box features
+* [Part 2](http://vimeo.com/38271818) : studio, facet override, object renderer, woko push
 
-You'll need to install the `woko` shell script to go through this tutorial. Follow instructions explained [here](https://github.com/pojosontheweb/woko/wiki/Download). 
 
-Make sure the `woko` command is available in your PATH before you start.
+> You'll need the `woko` command line tool in order to go through this tutorial.
+> Follow instructions explained [here](download.html).
 
 # Project init
 
-A Woko app needs several dependencies to be configured in the pom etc. The `woko` script can initialize the whole thing for you.
+A Woko app is a maven war module. As such, it requires a pom.xml with dependencies, plugins and the like.
+If you start from scratch (new project), `woko` can initialize the whole thing for you.
 
 Open a command prompt, switch to a folder of your choice and create a new Woko project :
 
     $ cd ~/projects
     $ woko init
 
-The command will ask you for some basic info about your project. You can pick default values for everything excepted the `groupId` and `artifactId`  :
+You can pick default values for everything excepted the `groupId` and `artifactId`  :
 
     $ woko init
     __       __     _  __
@@ -83,12 +75,12 @@ This creates a `myapp` project in the current directory :
                     WEB-INF/
                         web.xml                                
 
-* pom.xml : maven pom with everything pre-configured 
-* MyLayout.groovy : maven pom with everything pre-configured
-* MyEntity.groovy : example of an entity class using JPA
-* MyappInitListener.goovy : init listener for the app, starts-up your Woko
-* application.properties : resource bundle for the app
-* web.xml : WebApp XML descriptor, configured with Stripes, Woko, etc.      
+* `pom.xml` : maven pom with everything pre-configured
+* `MyLayout.groovy` : maven pom with everything pre-configured
+* `MyEntity.groovy` : example of an entity class using JPA
+* `MyappInitListener.goovy` : init listener for the app, starts-up your Woko
+* `application.properties` : resource bundle for the app
+* `web.xml`: WebApp XML descriptor, configured with Stripes, Woko, etc.
 
 # Domain Classes
 
@@ -124,9 +116,11 @@ Here's the example that has been generated in our project :
 
     }
 
-And that's it. A `MyEntity` POJO with persistence, validation and full-text search enabled. Your class will be scanned at startup, and ready for use. 
+And that's it. A `MyEntity` POJO with persistence, validation and full-text search enabled.
+Your class will be scanned at startup, and ready for use.
 
-> The built-in `HibernateCompassStore` supports Hibernate, Hibernate Validator and Compass mapping annotations. Refer to their docs for more infos about them.
+> The built-in `HibernateCompassStore` supports Hibernate, Hibernate Validator
+> and Compass mapping annotations.
 
 # Full Defaults
 
@@ -157,7 +151,7 @@ You can use the default credentials in order to log-in :
 
 As you can see, developers also have their home page, but this time with a few items in the nav bar :
 
-![Guest Home](img/woko2.PNG)
+![Developer Home](img/woko2.PNG)
 
 For now, let's try the CRUD features on our `MyEntity` Domain Class. 
 
@@ -165,11 +159,11 @@ For now, let's try the CRUD features on our `MyEntity` Domain Class.
 
 Let's first create an instance of our Domain Class. Click the _create_ link in the nav bar :
 
-![Guest Home](img/woko3.PNG)
+![Create Link](img/woko3.PNG)
 
 As you can see, Woko has found your Domain Class, you can select `MyEntity` from the list, and submit :
 
-![Guest Home](img/woko4.PNG)
+![Create Entity](img/woko4.PNG)
 
 A FORM is generated for your POJO, with input fields for first-level properties :
 
