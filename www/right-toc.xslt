@@ -96,7 +96,6 @@
 		<script type="text/javascript">
 			$(function() {
 				$('body').scrollspy({
-                    offset: 30,
                     target: '#right-nav'
                 });
 			});
