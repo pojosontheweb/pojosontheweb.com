@@ -50,8 +50,6 @@ new File(srcDir).listFiles().each { File f ->
             println "nameWithoutExtension:$nameWithoutExtension"
             println "templateName:$templateName"
 
-            return
-
             // patch top nav
             def binding = [
                 name: nameWithoutExtension
@@ -63,7 +61,8 @@ new File(srcDir).listFiles().each { File f ->
             String fileText = f.text
             String updatedText = fileText.replaceAll(/\{\{top-nav\.html}}/, patchedTopNav)
             println "patched : " + (f.absolutePath + ".patched.md")
-            String patchedFileName = f.parent.absolutePath + File.separator + nameWithoutExtension + ".patched.md"
+            String patchedFileName = f.parentFile.absolutePath + File.separator + nameWithoutExtension + ".md.patched.md"
+            println "patched file : $patchedFileName"
             File patchedFile = new File(patchedFileName)
             try {
                 patchedFile.text = updatedText
