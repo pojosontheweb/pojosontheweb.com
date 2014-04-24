@@ -60,7 +60,7 @@ footer a {
 	color: lightgrey;
 }
 
-footer a:selected {
+footer a:hover {
 	color: lightgrey;
 }
 
@@ -70,4 +70,16 @@ footer .copyright {
 
 footer img {
 	margin-top: 6px;
+}
+
+blockquote {
+    font-size: 14px;
+    background-color: #FAFAFA;
+    color: #505050;
+}
+
+code {
+    font-size: 85%;
+    color: #333;
+    background-color: #FBFBFB;
 }

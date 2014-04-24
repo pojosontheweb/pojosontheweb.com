@@ -16,6 +16,13 @@ HTML header:  <script type="text/javascript"
 	Woko Developer Guide
 </h1>
 
+This document describes the architecture and internals of Woko.
+It explains every relevant module, and shows how to use/extend the Woko APIs.
+
+You should be familiar with Java, MVC Frameworks and Web technologies in general before you read this.
+Woko is full stack, and relies on many different technologies. Some are optional (pluggable), but
+the foundation itself involves various concepts, APIs and protocols.
+
 # Architecture
 
 Woko itself doesn't do much. It's nothing but a good mix of various technologies combined altogether. The core runtime has very few dependencies, basically [Stripes](http://www.stripesframework.org) and [JFacets](http://jfacets.rvkb.com) only. Then, pluggable components provide the necessary services, like persistence or user management.
@@ -30,7 +37,8 @@ The overall architecture looks like this :
 
 Domain Objects in Woko are POJOs. We don't use no meta-framework of any kind, only the Java type system. 
 
-Woko manages your POJOs through the `ObjectStore`, which handles the persistence of your objects seamlessly. The store is created at startup and connects to an underlying database in order to save the state and provide access to your Objects. This can be implemented in many different ways, using an ORM, custom DAOs, or whatever you can think of. 
+Woko manages your POJOs through the `ObjectStore`, which handles the persistence of your objects.
+The store is created at startup and connects to an underlying database in order to save the state and provide access to your Objects. This can be implemented in many different ways, using an ORM, custom DAOs, or whatever you can think of.
 
 > The ObjectStore only implements the basic CRUD operations by default, but it's a good entry point to place more specialized accessors to your domain objects (e.g. queries) when you'll need them. Like other Woko components, it is accessible everywhere in your application. 
 
@@ -241,7 +249,7 @@ The init listener has to be configured in web.xml :
 
 Groovy Init is an alternative, more flexible way to startup Woko. It also uses a Servlet Context Listener in order to create Woko when the application starts, but this one delegates all the initialization to a Groovy script.
 
-This is particularly handly when used in combination with [environments](Environments), so that you can create various flavors of Woko with the full power of a programming language, and depending on the context (test, prod, etc.).
+This is particularly handy when used in combination with [environments](Environments), so that you can create various flavors of Woko with the full power of a programming language, and depending on the context (test, prod, etc.).
 
 To enable it, first you need to add the dependency to your ```pom.xml``` :
 

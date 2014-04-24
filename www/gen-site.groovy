@@ -38,9 +38,17 @@ new File(srcDir).listFiles().each { File f ->
             println "=> Processing $f.absolutePath"
             String nameWithoutExtension = f.name.substring(0, f.name.lastIndexOf("."))
 
+            // handle template
+            def templateName = "right-toc.xslt"
+            def subDotIndex = nameWithoutExtension.indexOf(".")
+            if (subDotIndex!=-1) {
+                templateName = nameWithoutExtension.substring(subDotIndex+1, nameWithoutExtension.length()) + ".xslt"
+                nameWithoutExtension = nameWithoutExtension.substring(0, subDotIndex)
+            }
+
             // patch top nav
             def binding = [
-                nameWithoutExtension: nameWithoutExtension
+                name: nameWithoutExtension
             ]
             def template = templateEngine.createTemplate(templateText).make(binding)
             def patchedTopNav = template.toString()
@@ -52,7 +60,7 @@ new File(srcDir).listFiles().each { File f ->
             File patchedFile = new File(f.absolutePath + ".patched.md")
             try {
                 patchedFile.text = updatedText
-                def command = "./doc2html.sh $nameWithoutExtension"
+                def command = "./doc2html.sh $nameWithoutExtension $templateName"
                 println "Command : $command"
                 def p = command.execute()
                 ByteArrayOutputStream out = new ByteArrayOutputStream()
