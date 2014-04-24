@@ -26,7 +26,8 @@ Download the latest stable <code>woko</code> command line script :
 
 Save to your computer, and make it available to your `PATH`.
 
-You can try that it works by switching to an empty folder and calling the `woko` script :
+You can try that it works by switching to an empty folder and calling the `woko` script.
+It should produce the following output :
 
     __       __     _  __
     \ \  _  / /___ | |/ / ___
