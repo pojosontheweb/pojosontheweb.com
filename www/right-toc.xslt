@@ -200,6 +200,13 @@
 		</li>
 	</xsl:template>
 	
+	<xsl:template match="table">
+		<table class="table table-condensed table-bordered table-striped">
+			<xsl:apply-templates select="@*|node()"/>
+		</table>
+	</xsl:template>
+	
+	
 	<xsl:template match="h1">
 		<xsl:variable name="link">
 			<xsl:value-of select="@id"/>
@@ -207,7 +214,7 @@
 		<h1 id="{$link}">
 			<xsl:apply-templates select="@*|node()"/>
 		</h1>
-	</xsl:template>
+	</xsl:template>		
 
 	<xsl:template match="h2">
 		<xsl:variable name="link">
