@@ -944,6 +944,18 @@ Here is a fictious JSP that backs our `renderPropertyValue` facet for the `addre
 
 > An alternate `renderPropertyValueEdit` is used when editing the object.
 
+# JSON & REST
+
+Woko is RPC-friendly. Everything that you do when you're logged in as a developer can be done via REST-like calls.
+
+## RPC Resolutions & RPC Interceptor
+
+Any Resolution Facet can return a special Resolution, called RpcResolution. This one tells Woko that the returned content is to be consumed by another app, and that the request is actually a "Remote Procedure Call", and not an HTML page to be rendered. 
+
+
+TODO : explain RpcInterceptor (isRpc=true), validation errors conversion, and RpcResolution.
+
+
 # Localization
 
 In Woko, all the strings required by the application must be written in application.properties file. This file is generated when you run `woko init`. 
