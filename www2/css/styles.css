@@ -1,0 +1,59 @@
+/* BOOTSTRAP 3.x GLOBAL STYLES
+-------------------------------------------------- */
+body {
+    padding-bottom: 40px;
+    color:white;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1.8em;
+}
+
+.jumbotron {
+    margin: 0;
+    padding-top: 30px;
+    padding-bottom: 20px;
+    background-color: #51BFBE;
+}
+
+.jumbotron h1, .col h2, .content h2, .content h3 {
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+.jumbotron p {
+    font-size: 1.5em;
+}
+
+.col h2 {
+    padding-bottom: 12px;
+}
+
+.col p {
+    font-size: 0.8em;
+}
+
+.cols .col {
+    padding-top: 30px;
+}
+
+.woko {
+    background-color: #6982A2;
+    padding-bottom: 20px;
+}
+
+.findr {
+    background-color: #DCD56C;
+    padding-bottom: 20px;
+}
+
+.stuff {
+    background-color: #FC694D;
+    padding-bottom: 20px;
+}
+
+h2 {
+    margin: 0;
+}
+
+#sectionWoko, #sectionFindr, #sectionStuff {
+    padding-bottom: 64px;
+    padding-top: 32px;
+}
