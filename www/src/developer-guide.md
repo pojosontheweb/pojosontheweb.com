@@ -1439,12 +1439,12 @@ So you'd just use `@StricBinding`'s `allow` and `deny` fields :
 
 	@StrictBinding(
 		allow=[
-			object.foo,
-			object.bar.*,
-			facet.baz
+			'object.foo',
+			'object.bar.*',
+			'facet.baz'
 		],
 		deny=[
-			object.bar.funk			
+			'object.bar.funk'
 		]
 	)
 	@FacetKey(name="myResolution", profileId="myProfile", targetObjectType=MyClass.class)
@@ -1475,8 +1475,9 @@ Woko escapes HTML output in the object renderer. Data displayed should be safe b
 ## woko push
 ## IntelliJ IDEA plugin
 # Add-ons #
-## User Management ##
 ## Asynchronous Jobs ##
+## Blobs ##
+## User Management ##
 # Performance #
 ## Browser caching & static resources ##
 ## Hibernate 2nd level cache ##
