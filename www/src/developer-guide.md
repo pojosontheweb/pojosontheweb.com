@@ -234,6 +234,30 @@ The init listener has to be configured in web.xml :
     
     </web-app>
 
+
+## Config Parameters
+
+Some of the base components are configured via parameters. Here's the list.
+
+### Stripes filter
+
+Parameter name | Doc
+------------- | -------------
+ActionResolver.Packages | The package(s) for action lookup. By default you need at least <code>woko.actions</code> in there (so that the Woko action beans are found), and you can add your own packages if you need.
+Extension.Packages | The package(s) for Stripes extensions lookup. By default you need at least <code>woko.actions</code> in there (so that the Woko extensions are found), and you can add your own packages if you need. You might ant to add <code>net.sourceforge.stripes.rpc</code> in order to enable RPC.
+LocalePicker.Locales | The supported locales. Localized messages are provided for <code>en,fr</code>.
+ExceptionHandler.Class | The exception handler to be used : <code>net.sourceforge.stripes.exception.DelegatingExceptionHandler</code>.
+DelegatingExceptionHandler.Packages | The packages to scan for exception handlers. Requires <code>woko.exceptions.handlers</code>, and you can add your own to specialize exception handling.
+
+### web.xml
+
+Module | Parameter name | Doc
+------------- | ------------- | -------------
+Core | Woko.Facet.Packages | The packages for facet class scanning. Includes two implicit packages : <code>woko.facets.builtin</code> and <code>facets</code>. You can add your own like <code>com.myco.myapp.facets</code>.
+Hibernate/Compass | Woko.Hibernate.Packages | The packages to scan for entities. Includes implicit package <code>model</code>.
+
+> For more config examples, have a look at our webtests : <code>webtests/*</code>, they contain various initialization settings. 
+
 ## Groovy Init
 
 Groovy Init is an alternative, more flexible way to startup Woko. It also uses a Servlet Context Listener in order to create Woko when the application starts, but this one delegates all the initialization to a Groovy script.
@@ -487,6 +511,8 @@ And the response :
     no way !
 
 For that request, `MyClass.foo` and `DoIt.bar` have been bound using the parameters `facet.foo` and `object.bar`.
+
+> Data Binding is very powerful but comes at a price. It opens up huge security holes in your app if you use it carelessly, as it allows remote users to bind on virtually any property accessible from the main controller. Your app should be protected using @StrictBinding. Refer to the Security chapter for more info.
 
 ### Type Converters for your POJOs
 
@@ -944,18 +970,83 @@ Here is a fictious JSP that backs our `renderPropertyValue` facet for the `addre
 
 > An alternate `renderPropertyValueEdit` is used when editing the object.
 
-# JSON & REST
+# RPC & JavaScript
 
-Woko is RPC-friendly. Everything that you do when you're logged in as a developer can be done via REST-like calls.
+Woko has built-in support for AJAX via its RPC services, that can be accessed over HTTP, or using a dedicated JavaScript API.
 
-## RPC Resolutions & RPC Interceptor
+## RPC services
 
-Any Resolution Facet can return a special Resolution, called RpcResolution. This one tells Woko that the returned content is to be consumed by another app, and that the request is actually a "Remote Procedure Call", and not an HTML page to be rendered. 
+All CRUD operations (load, save, delete, search, list) are available remoteloy through dedicated services. All you can do in the "developer" interface can be done via RPC calls. 
+You can also invoke your own Resolution Facets in an AJAX fashion : Woko provides a mechanism to write Resolution Facets that can return either HTML or JSON data depending on the caller.
 
+The URLs used for CRUD RPC calls are just the usual ones, with an additional `isRpc=true` request parameter.
 
-TODO : explain RpcInterceptor (isRpc=true), validation errors conversion, and RpcResolution.
+### Built-in services
 
+|	action	|	comment | url 		|
+|-----------|-----------|-----------|
+| load | Return a POJO as JSON, using the json facet on it. | `http://.../view/MyClass/123?isRpc=true`|
+| save | Persists a POJO and returns it as JSON. | `http://.../save/MyClass?isRpc=true&object.id=123&object.prop=foobar...`|
+| delete | Removes a POJO from persistent storage, and returns a confirmation object. | http://.../delete/MyClass/123?isRpc=true&facet.confirm=true |
+|  find | List instances of a class, returning the structure as JSON (includes total counts and other pagination data). | http://.../list/MyClass?isRpc=true&facet.resultsPerPage=100&facet.page=0 |
+| search | Full text search, returned as JSON result. | http://.../search?isRpc=true&facet.query=moby&facet.resultsPerPage=100&facet.page=0 |
 
+### Invoking your own facets
+
+Of course, you can also invoke your own facets over HTTP, and get JSON as the result. 
+
+TODO explain RpcResolution for how to return resolutions from your facets that handle both HTML and JSON outputs
+
+## JavaScript API
+
+All the services mentionned above can be reached using a dedicated JavaScript API :
+
+	<script src="./woko/js/woko.base.js"></script>
+	<script src="./woko/js/woko.rpc.js"></script>
+	...
+	var cli = new woko.rpc.Client({baseUrl:"/woko-webtests"});
+	// save a MyBook object...
+    cli.save({
+        className:"MyBook",
+        obj: {
+            _id: 1234,
+            name: "Moby Dick"
+        },
+        load: function(savedBook) {
+            log(new Date() + " - Save1 : id = " + savedBook._id + " name = " + savedBook.name);
+            // load the previously saved book...
+            cli.load({
+                className: "MyBook",
+                key: 1234,
+                load: function(loadedBook) {
+                    log(new Date() + " - Reload : id = " + loadedBook._id + " name = " + loadedBook.name);
+                    // update a property
+                    loadedBook.nbPages = "123";
+                    loadedBook.name = "tower";
+
+                    // save the book again
+                    cli.save({
+                        obj: loadedBook,
+                        load: function(savedBook2) {
+                            log(new Date() + " - Save2 : id = " + loadedBook._id + " name = " + loadedBook.name);
+                            // delete the book
+                            cli.remove({
+                                obj: savedBook2,
+                                load: function(result) {
+                                    log(new Date() + " - Deleted : id = " + savedBook2._id + " name = " + savedBook2.name + " (success = " + result.success + ")");
+                                    var loader = dojo.byId("loader");
+                                    loader.innerHTML = "loaded";
+                                    dojo.removeClass(loader, "loading");
+                                    dojo.addClass(loader, "loaded");
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+	
 # Localization
 
 In Woko, all the strings required by the application must be written in application.properties file. This file is generated when you run `woko init`. 
@@ -1051,7 +1142,9 @@ Your pom should look like this :
         </executions>
     </plugin>
 
-# Unit Testing
+# Testing
+
+## Unit Tests
 
 Woko includes utility classes for out-of-container unit testing (see `woko.mock.MockUtil`). It is based on Stripes' [MockRoundtrip](http://www.stripesframework.org/display/stripes/Unit+Testing) and allows to emulate a running WokoActionBean and unit-test your facets.
 
@@ -1130,6 +1223,95 @@ Here's an example of how you can do this easily (Groovy again), with your own Ob
     }
 
 > If your ObjectStore is a `TransactionalStore`, the mock testing will use `WokoTxInterceptor`, and demarcate the transactions for each call to `tripXyz()`, just like it'd be done in a regular servlet request handling. On the other hand, be careful to properly handle transactions for all code that uses your ObjectStore in your test besides calls to `tripXyz()` : the tx interceptor is fired only when MockRoundtrip executes, so other calls in your tests should handle the transactions themselves. 
+
+## Web Tests
+
+TODO explain how to setup the project for selenium tests.
+
+# Security
+
+Woko tries to be secure and no security holes are known at the time writing this document. Still, when you'll build on the Woko foundations, you might introduce flaws. Here are common pitfalls and remedies.
+
+## Data Binding
+
+Woko extensively relies on Data Binding. This means that a malicious user, guessing or knowing the data model, can "bind" arbitrary values onto properties of your object model. Somtimes properties that you didn't intend the user to be able to change. The issues will depend on your Domain Model, and the "root paths" accessible from HTTP requests. 
+
+A very simple example : you override a `view` facet for a `guest` user on `MyClass`, because you want un-authenticated users to be able to `view` those kind of objects. The user ain't supposed to be able to change the object's state, only to `view` it.
+
+So you have `MyClass` :
+
+	@Entity
+	class MyClass {	
+		...		
+		String myProp				
+		...	
+	}
+
+And you write your own `view` for `guest` users over this, that forwards to a JSP of your own :
+
+	@FacetKey(name="view", profileId="guest", targetObjectType=MyClass.class)
+	class ViewMyClassGuest extends ViewImpl {	
+		@Override
+		String getPath() {
+			return "/WEB-INF/jsp/guest/view-MyClass.jsp"
+		}
+	}
+
+
+Looks pretty good, and harmless at first sight, but you've just introduced a major security issue in your app ! Any un-authenticated (`guest`) user can now change the `myProp` property of `MyClass` objects, just by issueing an HTTP request :
+
+	http://.../view/MyClass/123?object.myProp=foobar
+
+This is a contrived example : again, the remote user can virtually change your whole db, if he knows the paths to bind to.
+
+### Using @StrictBinding
+
+The solution to secure your Resolution Facets (and Action Beans too, if you use some) is to use Stripes' `@StrictBinding` annotation on the facet. It's almost the same than for a regular Action Bean, excepted that you need to use `facet.` or `object.` prefixes in the `allow` and `deny` fields of the annotation. 
+
+Securing our previous eample just goes like :
+
+	@StrictBinding
+	@FacetKey(name="view", profileId="guest", targetObjectType=MyClass.class)
+	class ViewMyClassGuest extends ViewImpl {	
+		...
+	}
+
+By default, `@StrictBinding` on a Resolution Facet prevents all bindings to be done. Of course, you'll want some of the fields to bind, otherwise you would not need databinding at all...
+
+So you'd just use `@StricBinding`'s `allow` and `deny` fields :
+
+	@StrictBinding(
+		allow=[
+			object.foo,
+			object.bar.*,
+			facet.baz
+		],
+		deny=[
+			object.bar.funk			
+		]
+	)
+	@FacetKey(name="myResolution", profileId="myProfile", targetObjectType=MyClass.class)
+	class MyResolution extends ... implements ResolutionFacet {	
+		...
+	}
+
+> Again, note the `object.` and `facet.` prefixes : you'll have to use them on the facet's annotation. It allows Woko to know what object you want to secure : the target object or the facet itself.
+
+### Spotting Unsecure Bindings
+
+You'll end up with dozens (and probably much more) of Resolution Facets in your project, and it ain't easy spotting open bindings in all that. You'd have to list all Resolution Facet classes, and check if the allowed bindings meet what you need.
+
+Fortunately Woko can help you with this, using the `woko` command line tool. It includes a `woko list bindings` command that tells you what is reachable or not, taking your `@StrictBinding` annotations into account. The report basically tells you what props are bindable into your app, and for what role(s).
+
+Try this, in your project folder :
+
+	woko list bindings
+
+It will output all reachable bindings for your app, including the facet key and class, as well as the paths. You can now fix stuff in your code by adding or updating `@StrictBinding`s, and run `woko list bindings again`.
+
+## XSS
+
+Woko escapes HTML output in the object renderer. Data displayed should be safe by default. Of course, it's up to you to be careful about this when outputting values in your fragments or pages.
 
 # Tooling
 ## The woko Script
