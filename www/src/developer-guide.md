@@ -1075,7 +1075,16 @@ When overriding a facet or a fragment facet, you cane use getRequest() to use th
     String msg = woko.getLocalizedMessage(getRequest(), "my.message.key");
 
 
-TODO explain how to use <fmt:message/>.
+For use in JSPs, Woko includes a tag file :
+
+    <%-- no params, no var --%>
+    <span class="foo">Hey : <w:message key="my.msg.key"/></span>
+
+    <%-- with params, store in var --%>
+    <w:message key="my.msg.key" var="myMsg">
+      <w:msg-param value="yeah"/>
+    </w:message>
+    <h1>${myMsg}</h1>
 
 # Build 
 
