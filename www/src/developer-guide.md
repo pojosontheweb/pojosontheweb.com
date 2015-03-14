@@ -14,7 +14,7 @@ the foundation itself involves various concepts, APIs and protocols.
 
 # Architecture
 
-Woko itself doesn't do much. It's nothing but a good mix of various technologies combined altogether. The core runtime has very few dependencies, basically [Stripes](http://www.stripesframework.org) and [JFacets](http://jfacets.rvkb.com) only. Then, pluggable components provide the necessary services, like persistence or user management.
+Woko itself doesn't do much. It's nothing but a good mix of various technologies combined altogether. The core runtime has very few dependencies : [Stripes](http://www.stripesframework.org) and [JFacets](http://jfacets.rvkb.com) only. Then, pluggable components provide the necessary services, like persistence or user management.
 
 The overall architecture looks like this :
 
@@ -37,12 +37,13 @@ Woko heavily uses introspection (`java.lang.reflect`) in order to determine the 
 * expose their properties with accessors following the JavaBean convention
 * use generics for Collections and Maps (e.g. `List<MyClass>`) so that Woko knows the compound types
 
-Woko ships with a `HibernateStore` that uses automatic classpath scanning, JPA annotations for the mapping, and `javax.validation`. 
+> Woko ships with a fully functional Hibernate-backed ObjectStore that uses automatic classpath scanning, JPA annotations for the mapping, and `javax.validation` annotations for validation constraints. It can be used as-is and extended if needed.
 
 
 ## MVC Layer
 
-The MVC layer is built on top of the fantastic Stripes framework. It's one of the few libs that Woko exposes directly, and that you will have to use when developing a Woko application.
+The MVC layer is built on top of the fantastic [Stripes](http://www.stripesframework.org) framework, _because it doesn't have to suck_. 
+It's one of the few libs that Woko exposes directly, and that you will have to use when developing a Woko application.
 	
 Woko uses a main `ActionBean` for serving all the requests (excepted for static resources of course), along with several Stripes extensions that make binding, validation etc. work directly your Domain Objects and users.  
 
@@ -50,28 +51,31 @@ Woko uses a main `ActionBean` for serving all the requests (excepted for static 
 
 It's the main Controller for the Woko app. Kind-of a "super dispatcher" that handles all requests and delegates to the appropriate facet. 
 
-Unlike a typical Stripes app, a typical Woko application doesn't use several `ActionBean`s. They are replaced by `ResolutionFacet`s : facets that handle the http request, and return a Stripes `Resolution`.   
+Unlike a typical Stripes app, a typical Woko application doesn't use several `ActionBean`s. They are replaced by Woko's controllers : `ResolutionFacet`s. WokoActionBean handles the http request, and delegates to a ResolutionFacet, which does the actual processing and return a Stripes `Resolution`.   
 
-`WokoActionBean` also defines Woko's URL scheme. It responds to all requests that match its URL binding : 
+`WokoActionBean` defines Woko's URL scheme. It responds to all requests with a path like : 
 
-    {facetName}[/{className}[/{key}]]
+    /facetName}[/className[/key]]
 
-The following URLs are typical Woko URLs that WokoActionBean will handle by delegating to the appropriate components :
+Here below are typical Woko URLs that WokoActionBean will handle by delegating to the appropriate components :
 
 * `/view/Product/123`
+* `/?facetName=view&className=product&key=123` (with regular parameters)
 * `/list/Product`
 * `/home`
 * `/doSomeFunkyStuff/MyClass/123?facet.foo=123&object.bar=cool`
 
-The URL scheme is an important part of Woko. The URLs reflect what they mean, they show the intent and target object. The different parts of the URL (`facetName`, `className` and `key`) are used by WokoActionBean in order to resolve the target object and Resolution Facet to be applied.
+The URL scheme is a very important part of Woko. The URL for a page usually shows the intent through the facet name, and target object. URLs like `/view/Product/cool-sneakers` or `/edit/StockEntry/1234` often contain meaningful information. Woko kind of standardizes that through its consistent URL scheme. 
 
-All parameters are prefixed with either `facet.` or `object.` : they will be bound respectively to the Resolution Facet and target Object, provided they satisfy the validation constraints if any. Like their cousins Action Beans, Resolution Facets has at least one event handler method, that returns a `Resolution`.
+The different parts of the URL (`facetName`, `className` and `key`) are used by WokoActionBean in order to resolve the target object and Resolution Facet to be applied.
 
-> NOTE : You can use ActionBeans in your app, there ain't no problems with that. It's only that ActionBeans don't work like ResolutionFacets : they don't apply to target types and roles. You'll use ActionBeans typically only for actions that apply to all users and have no particular target object. You can also use ActionBeans to write alternale "routes" to some ResolutionFacet, using the action's @UrlBinding and forwarding to another URL. Additional action beans take precedence over WokoActionBean in case the @UrlBinding conflicts.  
+All other parameters are prefixed with either `facet.` or `object.` : they will be bound respectively to the Resolution Facet and target Object, provided they satisfy the validation constraints if any. Resolution Facets are explained in detail [here](#resolutionfacets").
+
+> NOTE : You can create your own ActionBeans in your app, there ain't no problems with that. Additional action beans take precedence over WokoActionBean in case the @UrlBinding conflicts.  
 
 ### Stripes extensions
 
-Woko adds several extensions to Stripes in order to make Resolution Facets work like Action Beans, with respect to Binding & Validation, Security, etc. Thes extensions are implemented as Stripes `Interceptor`s and other Stripes components (`ActionBeanPropertyBinder` etc). Woko also registers custom `TypeConverter`s for transparent binding of Domain Objects. 
+Woko adds several extensions to Stripes in order to make Resolution Facets work like Action Beans, with respect to Binding & Validation, Security, etc. These extensions are implemented as Stripes plugins : `Interceptor`s, `ActionBeanPropertyBinder`, `TypeConverter`s etc.
 
 You should not need to change these base components. Nevertheless, as everything else, you can sonfigure Stripes to use other extensions in place of Woko's defaults.
 
@@ -79,7 +83,7 @@ You should not need to change these base components. Nevertheless, as everything
 
 There's only one Woko ! At least in your webapp… 
 
-When the [application starts up](Startup), a `Woko` instance is created, initialized, and bound to the `ServletContext`. Then, from anywhere in the app, the `Woko` instance can be retrieved and used as an top-level entry point for executing various tasks, by calling the static method `Woko#getWoko(ServletContext ctx)`.
+When the [application starts up](#startup), a `Woko` instance is created, initialized, and bound to the `ServletContext`. Then, from anywhere in the app, the `Woko` instance can be retrieved and used as an top-level entry point for executing various tasks, by calling the static method `Woko#getWoko(ServletContext ctx)`.
 
 Facets can also access the `Woko` instance via `getFacetContext().getWoko()`. 
 
@@ -136,16 +140,16 @@ The contract of Object Store is defined by the interface `woko.persistence.Objec
 
 ### User Manager
 
-The UserManager handles users/roles for the application. It is a very simple view of the underlying user management system that only provides two methods :
+The UserManager handles users/roles for the application. It is a very simple abstraction of the underlying user management system that only provides two methods :
 
 * get the roles for a username : allows Woko to lookup facets for the user's roles
 * authenticate a user
 
-Woko ships with in-memory, container and hibernate enabled `UserManager`s. The contract is defined by interface `woko.users.UserManager`.
+Woko ships with container-auth (BASIC and FORM-based) `UserManager`s. It also includes a HibernateUserManager that allows to store user data into Hibernate. The contract is defined by interface `woko.users.UserManager`.
 
 ### Username Resolution Strategy
 
-This component allows for pluggable authentication and user session management. It allows to change the way Woko retrieves the current username. 
+This component allows for pluggable authentication and user session management. It allows to change the way Woko retrieves the current username for a given http request. 
 
 For example, when using container authentication, it gets the username by calling `request.getRemoteUser()`, as per the servlet spec. Other implementations can use the http session, cookies, mocks for tests, or whatever else. 
 
@@ -153,11 +157,11 @@ For example, when using container authentication, it gets the username by callin
 
 Facets in your application are scanned from the classpath by the Facet Descriptor Manager. It has to be configured with the base package(s) to scan (e.g. `com.myco.myapp.facets`).
 
-You should not need to, but can also replace this component, in order to use a different form of facets (e.g. XML descriptor instead of Annotations). 
+You should not need to, but can also replace this component, in order to use a different form of facets (e.g. XML descriptor instead of Annotations). At the moment there aint no app we know of that uses an custom FacetDescriptorManager, but who knows.
 
 ## Inversion of Control
 
-Woko delegates management of the various sub components to an Inversion of Control "container". This allows to plug any component easier, and to manage their dependencies and lifecycle if needed. It also serves as a registry for any optional components, so that they can be accessed everywhere in the application. The woko instance itself is not in the container : instead it holds a reference to the container and retrieves the components from it.
+Woko delegates management of the various sub components to an Inversion of Control "container". This allows to plug any component easier, and to manage their dependencies and lifecycle if needed. It also serves as a registry for any optional components, so that they can be accessed everywhere in the application (e.g. from controllers). The woko instance itself is not in the container : instead it holds a reference to the container and retrieves the components from it.
 
 The IoC container is defined by interface `woko.ioc.WokoIocContainer`, and is pluggable. Woko ships with a default implementation, and a [Pico Container](http://picocontainer.codehaus.org) adapter.
 
@@ -237,19 +241,19 @@ The init listener has to be configured in web.xml :
 
 ## Config Parameters
 
-Some of the base components are configured via parameters. Here's the list.
+Some of the base components are configured via parameters in `web.xml`. Here's the list.
 
-### Stripes filter
+### Stripes filter init-params
 
 Parameter name | Doc
 ------------- | -------------
 ActionResolver.Packages | The package(s) for action lookup. By default you need at least <code>woko.actions</code> in there (so that the Woko action beans are found), and you can add your own packages if you need.
-Extension.Packages | The package(s) for Stripes extensions lookup. By default you need at least <code>woko.actions</code> in there (so that the Woko extensions are found), and you can add your own packages if you need. You might ant to add <code>net.sourceforge.stripes.rpc</code> in order to enable RPC.
+Extension.Packages | The package(s) for Stripes extensions lookup. By default you need at least <code>woko.actions</code> in there (so that the Woko extensions are found), and you can add your own packages if you need. You might ant to add <code>net.sourceforge.stripes.rpc</code> in order to enable [RPC](#rpcjavascript).
 LocalePicker.Locales | The supported locales. Localized messages are provided for <code>en,fr</code>.
 ExceptionHandler.Class | The exception handler to be used : <code>net.sourceforge.stripes.exception.DelegatingExceptionHandler</code>.
 DelegatingExceptionHandler.Packages | The packages to scan for exception handlers. Requires <code>woko.exceptions.handlers</code>, and you can add your own to specialize exception handling.
 
-### web.xml
+### web.xml context-params
 
 Module | Parameter name | Doc
 ------------- | ------------- | -------------
@@ -262,7 +266,7 @@ Hibernate/Compass | Woko.Hibernate.Packages | The packages to scan for entities.
 
 Groovy Init is an alternative, more flexible way to startup Woko. It also uses a Servlet Context Listener in order to create Woko when the application starts, but this one delegates all the initialization to a Groovy script.
 
-This is particularly handy when used in combination with [environments](Environments), so that you can create various flavors of Woko with the full power of a programming language, and depending on the context (test, prod, etc.).
+This is particularly handy when used in combination with [environments](#environments), so that you can create various flavors of Woko with the full power of a programming language, and depending on the context (test, prod, etc.).
 
 To enable it, first you need to add the dependency to your ```pom.xml``` :
 
@@ -689,6 +693,7 @@ Woko includes a few tags that eases JSP writing :
 * title : return the title for a managed POJO
 * url : export the URL to a resolution facet as a page variable
 * username : return the name of the currently logged in user
+* message/msg-param : fetch a localized string from the application bundle
 
 The tags are implemented as JSP tag files, and are overlayed in your application by maven when you build. You only have to import the taglib in your JSP to start using them :
 
@@ -701,8 +706,7 @@ Or even import Woko's `taglibs.jsp`, it will import all the usual taglibs (Stand
 Here is an example of using `<w:title/>` and `<w:url/>` in order to create a link to a managed POJO :
 
     <%-- somewhere in a JSP… --%>
-    <c:set var="my" value="${…}"/>
-    <w:url var="myUrl" object="${my}"/>
+    <w:url var="myUrl" object="${myObject}"/>
     <a href="${myUrl}">
     	<w:title object="${my}"
     </a>
@@ -711,16 +715,18 @@ Here is an example of using `<w:title/>` and `<w:url/>` in order to create a lin
 
 # Object Renderer 
 
-The Object Renderer allows Woko to display POJOs as read-only or read-write pages, so that users can view or change their state. It uses introspection and Fragment Facets in order to display everything dynamically : Woko doesn't generate any code, it's all done on-the-fly using types and medatata found on your objects. 
+The Object Renderer is at the very heart of Woko. It basically displays POJOs as read-only or read-write pages (with FORMs), and allows to navigate the associations. Feed the Renderer with any Object, and it'll spit out HTML for it.
+
+It uses introspection and Fragment Facets in order to display everything dynamically : Woko doesn't generate any code, it's all done on-the-fly using types and medatata found on your objects. 
 
 Here is a schematic break-down of the Object Renderer's facets :
 
 ![Object Renderer](object-renderer.png)
 
-A `layout` facet controls the global page template, and then a composite use of various fragments (`renderObject`, `renderProperties`) are involved in order to display your POJOs dynamically. Composition (container fragments including nested sub-fragments) is used in order to provide several different levels of granularity :
+A `layout` facet controls the global page template, and then various fragments (`renderObject`, `renderProperties`) are involved in order to display your POJOs dynamically. Composition (container fragments including nested sub-fragments) is used in order to provide several different levels of granularity :
 
 * page template
-   * navigation
+   * branding & navigation
    * object 
       * title
       * links
@@ -730,7 +736,7 @@ A `layout` facet controls the global page template, and then a composite use of 
          
 Woko provides generic implementations of these fragment facets, that can render any POJO using reflection in order to grab the properties of the object. The default rendering will thereby display all the properties of a POJO, using built-in fragment facets. 
 
-In order to change the rendering for a given POJO or property, you just need to override the appropriate facet. The composite, nested structure allows you to change all, or part of the rendering for your Domain Objects and roles. 
+In order to change the rendering for a given POJO or property, you just need to _override_ the appropriate facet. The composite, nested structure allows you to change all, or part of the rendering for your Domain Objects and roles. 
 
 ## Layout 
 
@@ -972,34 +978,189 @@ Here is a fictious JSP that backs our `renderPropertyValue` facet for the `addre
 
 # RPC & JavaScript
 
-Woko has built-in support for AJAX via its RPC services, that can be accessed over HTTP, or using a dedicated JavaScript API.
+Woko has built-in support for AJAX via its RPC services. All features can be accessed using JSON/HTTP, and Woko also ships a JavaScript API for use in the browser.
 
-## RPC services
+> We do not use the term REST on purpose : Woko does not use verbs. All HTTP requests are GETs or POSTs, and only the path/parameters make a difference.
 
-All CRUD operations (load, save, delete, search, list) are available remoteloy through dedicated services. All you can do in the "developer" interface can be done via RPC calls. 
-You can also invoke your own Resolution Facets in an AJAX fashion : Woko provides a mechanism to write Resolution Facets that can return either HTML or JSON data depending on the caller.
+## RPC Interceptor & RpcResolution
+
+Woko's uses a Stripes interceptor and a special request parameter in order to handle RPC calls.
+
+When a request is handled, Woko looks for the `isRpc` request parameter. If found, then Woko checks if the Resolution (returned by the ResolutionFacet) is a `RpcResolution`. If it is, then Woko calls `getRpcResolution()` on it, and returns the alternate, RPC response. 
+
+This allows your controllers (Resolution Facets) to handle both "regular" and RPC calls at the same time, in the same event handler method. Woko provides a `RpcResolutionWrapper` class that can help you with this.
+
+Here below is an example of such a "dual" facet that can respond either regular HTML or JSON, depending on the presence of the `isRpc` parameter :
+
+
+```
+/**
+ * Computes the price of a Product.
+ */
+@StrictBinding
+@FacetKey(name='computePrice', profileId='customer_role', targetObjectType=Product.class)
+class ComputeProductPrice extends BaseResolutionFacet {
+
+	BigDecimal price
+
+	@Override
+	Resolution execute(ActionBeanContext abc) {
+		// get Product from context
+		Product p = facetContext.targetObject
+		// assign this.price for later use in the JSP
+		price = product.computePrice() 
+		// "regular" Resolution (will produce html)
+		Resolution res = new ForwardResolution('/WEB-INF/jsp/product-price.jsp')
+		// but return a "rpc-aware" resolution
+		return new RpcResolutionWrapper() {
+			@Override
+            public Resolution getRpcResolution() {
+            	// for RPC, return JSON !
+            	return new JsonResolution([price:this.price])
+            }
+		}
+	}
+
+}
+
+```
+
+As you can see, you just need to use `RpcResolutionWrapper` and return an alternate, RPC-enabled resolution. You can then invoke this facet using `isRpc=true` and get the result as JSON. 
+
+This simple mechanism allows to write the actual controller logic once, and return different results based on what the client asks : HTML for humans, JSON for RPC.
+
+### RPC Validation errors
+
+If some validation errors are raised by your controller for an RPC request, then Woko will serialize them to JSON.
+ 
+## Built-in RPC services
+
+Every built-in controller in Woko is available as JSON/HTTP, using the `isRpc` param. All you can do in the "developer" interface can be done via RPC calls. 
+
+This includes CRUD operations (load, save, delete, search, list), meaning that you can interact with your Domain Model over RPC if you want. You could even use Woko for a pure API back-end, with no HTML produced at all. 
 
 The URLs used for CRUD RPC calls are just the usual ones, with an additional `isRpc=true` request parameter.
 
-### Built-in services
 
 |	action	|	comment | url 		|
 |-----------|-----------|-----------|
-| load | Return a POJO as JSON, using the json facet on it. | `http://.../view/MyClass/123?isRpc=true`|
-| save | Persists a POJO and returns it as JSON. | `http://.../save/MyClass?isRpc=true&object.id=123&object.prop=foobar...`|
-| delete | Removes a POJO from persistent storage, and returns a confirmation object. | http://.../delete/MyClass/123?isRpc=true&facet.confirm=true |
-|  find | List instances of a class, returning the structure as JSON (includes total counts and other pagination data). | http://.../list/MyClass?isRpc=true&facet.resultsPerPage=100&facet.page=0 |
-| search | Full text search, returned as JSON result. | http://.../search?isRpc=true&facet.query=moby&facet.resultsPerPage=100&facet.page=0 |
+| load | Return a POJO as JSON, using the json facet on it. | /view/MyClass/123?isRpc=true|
+| save | Persists a POJO and returns it as JSON. | /save/MyClass?isRpc=true&object.id=123&object.prop=foobar... |
+| delete | Removes a POJO from persistent storage, and returns a confirmation object. | /delete/MyClass/123?isRpc=true&facet.confirm=true |
+|  find | List instances of a class, returning the structure as JSON (includes total counts and other pagination data). | /list/MyClass?isRpc=true&facet.resultsPerPage=100&facet.page=0 |
+| search | Full text search, returned as JSON result. | /search?isRpc=true&facet.query=moby&facet.resultsPerPage=100&facet.page=0 |
 
-### Invoking your own facets
+## JSON
 
-Of course, you can also invoke your own facets over HTTP, and get JSON as the result. 
+Woko has out-of-the-box JSON support. It includes helpers for de/serializing Objects from/to JSON, and has a counterpart of the ObjectRenderer that allows to customize JSON output using facets.
 
-TODO explain RpcResolution for how to return resolutions from your facets that handle both HTML and JSON outputs
+### Helpers
+
+The `JsonResolution` class allows you to stream back JSON in a convenient way :
+
+```
+@FacetKey(...)
+class MyJsonResolutionFacet extends BaseResolutionFacet {
+
+	@Override
+	Resolution execute(ActionBeanContext abc) {
+		
+		// serializing Maps or Lists
+		
+		Map json = ...
+		return new JsonResolution(json)
+		
+		List array = ...
+		return new JsonResolution(array)
+				
+		// using the JsonRenderer to serialize any object
+		
+		MyClass myClass = ...
+		return new JsonResolution(myClass, getRequest())
+	}
+
+}
+```
+
+As Woko heavily uses the JSONObject API, you can use `woko.util.JSON` in order to convert JSONObject/JSONArray to Map/List.
+
+### JsonRenderer facets
+
+JsonRenderer is the counterpart of ObjectRenderer, but for returning JSON. It's a set of composed facets that are responsible for producing JSON data for any Object. 
+
+Here's how you get the JSON for any Object (from any component in the webapp) :
+
+```
+// the object to be JSON-ized
+Object o = ...
+
+// you need the HTTP request and Woko...
+HttpServletRequest request = ...
+Woko woko = Woko.getWoko(request.session.servletContext)
+
+// retrieve the RenderObjectJson facet
+RenderObjectJson roj = woko.getFacet(RenderObjectJson.FACET_NAME, request, o)
+
+// call objectToJson : we get back the object as JSON
+JSONObject o = roj.objectToJson(request);
+```
+
+Just like the ObjectRenderer, JsonRenderer delegates to other facets for producing the output. The `renderPropertyValueJson` facet converts a property of the target object to JSON. This is the counterpart of the ObjectRenderer's `renderPropertyValue` facet, for JSON.
+
+Here's how to change the whole JSON for a particular class :
+
+```
+@FacetKey(name="renderObjectJson", profileId=..., targetObjectType=MyClass.class)
+class RenderMyClassJson extends RenderObjectJsonImpl {
+
+	@Override
+    JSONObject objectToJson(HttpServletRequest request) {
+    	MyClass my = facetContext.targetObject
+    	// convert Map to JSONObject
+    	return JSON.toJSONObject([
+    		foo: my.getFoo(),
+    		...
+    	])
+	}
+
+}
+```
+
+Or for a single property of a class :
+
+```
+@FacetKey(name="renderPropertyValueJson_foo", profileId=..., targetObjectType=MyClass.class)
+class RenderMyClassJson extends BaseFacet implements RenderPropertyValueJson {
+
+	@Override
+    Object propertyToJson(HttpServletRequest request, Object propertyValue) {
+    	// propertyValue == MyClass.getFoo()
+    	Foo foo = propertyValue
+    	JSONObject o = new JSONObject() 
+    	o.put('bar', foo.getBar())
+    	return o
+	}
+
+}
+```
+
+The JsonRender is used by the `json` Resolution Facet, and used to produce results for all RPC requests :
+
+```
+/json/MyClass/123
+/view/MyClass/123?isRpc=true
+/save/MyClass/123?object.foo=bar&isRpc=true
+...
+
+```
+
 
 ## JavaScript API
 
-All the services mentionned above can be reached using a dedicated JavaScript API :
+Woko ships with a small JS client that helps invoking your Woko back-end from a web-browser, or any other JavaScript engine. It exposes the basic CRUD operations and allows to invoke arbitrary facets in RPC-style. It also handles validation errors for you.
+
+Here's an example that does a few CRUD operations :
+
 
 	<script src="./woko/js/woko.base.js"></script>
 	<script src="./woko/js/woko.rpc.js"></script>
@@ -1046,34 +1207,19 @@ All the services mentionned above can be reached using a dedicated JavaScript AP
             });
         }
     });
+```	
+
 	
 # Localization
 
-In Woko, all the strings required by the application must be written in application.properties file. This file is generated when you run `woko init`. 
+Woko supports i18n by default. The built-in interface is localizable, and your app can be as well.
 
-If you open this file, you can see:
+The default bundle to externalize your strings to is `/application.properties` (under `/src/main/resources`). 
 
-    ### Resources for woko's example domain class ###
-    MyEntity.class=Class
-    MyEntity.id=Id
-    MyEntity.myProp=My prop
-    MyEntity.myOtherProp=My other prop
+Retrieving the formatted messages is easy. From Java/Groovy :
 
-You can add displayed label for each attribute by setting `ClassName.attributeName=desiredLabel`. It's quite simple !
-
-Handling localization is just creating and filling application[_locale].properties files for each locale you want to support.
-
-You can access your label programmaticaly using the woko instance:
-
-    Woko woko = ... ; // grab Woko
-    String msg = woko.getLocalizedMessage(locale, "my.message.key"); 
-    String msg = woko.getLocalizedMessage(locale, "my.message.key.with.args", "funky", "cool"); 
-
-When overriding a facet or a fragment facet, you cane use getRequest() to use the user Locale:
-
-    Woko woko = ... ; // grab Woko
-    String msg = woko.getLocalizedMessage(getRequest(), "my.message.key");
-
+    String msg = woko.getLocalizedMessage(request, "my.message.key");
+    String msg = woko.getLocalizedMessage(request, "my.message.key.with.args", "funky", "cool"); 
 
 For use in JSPs, Woko includes a tag file :
 
@@ -1085,6 +1231,8 @@ For use in JSPs, Woko includes a tag file :
       <w:msg-param value="yeah"/>
     </w:message>
     <h1>${myMsg}</h1>
+
+Various messages in the UI can be defined in your application's resource bundle (like the property names in the ObjectRenderer).
 
 # Build 
 
