@@ -8,8 +8,12 @@ body {
     background-color: #51BFBE;
 }
 
+a, a:hover, a:focus {
+    color: white;
+}
+
 .jumbotron {
-    background-color: #51BFBE;
+    background-color: transparent;
     margin: 0;
     padding-top: 30px;
     padding-bottom: 20px;
@@ -64,7 +68,6 @@ h2 {
 }
 
 .more a {
-    color: white;
     text-decoration: none;
     font-size: 2.0em;
     border: 3px solid white;
@@ -73,6 +76,23 @@ h2 {
     padding-bottom: 12px;
     padding-left: 20px;
     padding-right: 20px;
+}
+
+.more a:hover {
+    background-color: white;
+    color: #51BFBE;
+}
+
+.woko .more a:hover {
+    color: #6982A2;
+}
+
+.findr .more a:hover {
+    color: #DCD56C;
+}
+
+.stuff .more a:hover {
+    color: #FC694D;
 }
 
 #woko, #findr, #goodies {
@@ -135,6 +155,5 @@ h3 small {
 }
 
 footer {
-    padding-bottom: 64px;
     font-size: 0.8em;
 }
