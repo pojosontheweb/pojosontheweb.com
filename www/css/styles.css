@@ -146,14 +146,27 @@ h2 {
     margin-bottom: 24px;
 }
 
+#rjar-slogan {
+    margin-bottom: 24px;
+}
+
 h3 small {
     color: white;
 }
 
 #goodies hr {
     width: 100%;
+    margin: 0;
 }
 
 footer {
     font-size: 0.8em;
+}
+
+a.back-to-top {
+    font-size: 10pt;
+}
+
+.share-page {
+    margin-top: 30px;
 }
