@@ -1,9 +1,13 @@
 Title:  Woko: Developer Guide
 {{top-nav.html}}
 
-<h1 class="page-header">
-	Woko Developer Guide
-</h1>
+<div class="page-header">
+    <h1>
+        Developer Guide
+        <small>Everything about Woko!</small>
+    </h1>
+</div>
+
 
 This document describes the architecture and internals of Woko.
 It explains every relevant module, and shows how to use/extend the Woko APIs.

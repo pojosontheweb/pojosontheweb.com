@@ -1,9 +1,12 @@
 Title:  Woko: Tutorial
 {{top-nav.html}}
 
-<h1 class="page-header">
-	Woko Tutorial
-</h1>
+<div class="page-header">
+    <h1>
+        Tutorial
+        <small>Hello Woko!</small>
+    </h1>
+</div>
 
 This tutorial aims at covering the main aspects of Woko through practical examples.
 We'll be using the default "Reference Implementation" (hibernate etc.), but the same concepts applies to other implementations of `ObjectStore`, `UserManager` etc.

@@ -1,9 +1,12 @@
 Title:  Woko: Download
 {{top-nav.html}}
 
-<h1 class="page-header index">
-    Get Woko
-</h1>
+<div class="page-header">
+    <h1 class="index">
+        Get Woko
+    </h1>
+</div>
+
 
 # Command line
 

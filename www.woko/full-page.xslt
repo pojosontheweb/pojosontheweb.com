@@ -73,7 +73,7 @@
 				<footer class="row">
 					<div class="col-sm-12">
 						<div class="copyright pull-left">
-							(c) The Woko Framework. POJOs on the Web ! 
+							(c) <a href="http://pojosontheweb.com">POJOs on the Web!</a>
 						</div>
 						<div class="pull-right">
 							<a href="http://pojosontheweb.com">							 

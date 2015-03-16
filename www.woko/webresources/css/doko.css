@@ -113,3 +113,14 @@ figure figcaption {
 .key-points h2.json span.title-img {
     background: url("../img/icon-jsonhttp-small-bw.png") center left no-repeat;
 }
+
+#top-nav a.wbrand img {
+    height: 30px
+}
+
+#top-nav a.wbrand {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 2px;
+    padding-bottom: 10px;
+}
