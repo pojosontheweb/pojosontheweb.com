@@ -60,7 +60,7 @@ h2 {
 .more {
     font-family: 'Montserrat Alternates', sans-serif;
     margin-top: 80px;
-    margin-bottom: 32px;
+    margin-bottom: 64px;
 }
 
 .more a {
@@ -75,12 +75,11 @@ h2 {
     padding-right: 20px;
 }
 
-#sectionWoko, #sectionFindr, #sectionStuff {
-    padding-bottom: 64px;
+#woko, #findr, #goodies {
     padding-top: 32px;
 }
 
-#sectionFindr h2 {
+#findr h2 {
     font-family: 'Faster One', cursive;
     font-size: 3.0em;
     padding-bottom: 24px;
@@ -88,18 +87,18 @@ h2 {
 }
 
 
-#sectionStuff h2 {
+#goodies h2 {
     font-family: 'Freckle Face', cursive;
     font-size: 3.0em;
     padding-bottom: 24px;
     padding-left: 15px;
 }
 
-#sectionFindr img {
+#findr img {
     padding-bottom: 24px;
 }
 
-#sectionFindr pre {
+#findr pre {
     border: none;
 }
 
@@ -110,4 +109,32 @@ h2 {
 .nav li a,
 .nav li a:hover {
     color: white;
+}
+
+#rjar-logo i {
+    display: inline-block;
+    padding-left: 64px;
+    width: 64px;
+    height: 64px;
+    background: url('../img/rjar.png');
+    background-size: 64px 64px;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+}
+
+#rjar-logo {
+    margin-bottom: 24px;
+}
+
+h3 small {
+    color: white;
+}
+
+#goodies hr {
+    width: 100%;
+}
+
+footer {
+    padding-bottom: 64px;
+    font-size: 0.8em;
 }
