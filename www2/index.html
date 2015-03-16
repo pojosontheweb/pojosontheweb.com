@@ -26,10 +26,14 @@
             <img src="img/woko-white.png" style="width:50%"/>
         </div>
         <div class="col-md-4 findr col text-center">
-            <img src="img/findr-white.png" style="width:50%"/>
+            <a href="#sectionFindr">
+                <img src="img/findr-white.png" style="width:50%"/>
+            </a>
         </div>
         <div class="col-md-4 stuff col text-center">
-            <img src="img/goodies-white.png" style="width:50%"/>
+            <a href="#sectionStuff">
+                <img src="img/goodies-white.png" style="width:50%"/>
+            </a>
         </div>
     </div>
 
@@ -89,55 +93,189 @@
                 </p>
             </div>
         </div>
-        <div class="text-center more">
-            <a href="#">
-                Get Woko
-            </a>
+        <div class="row">
+            <div class="col-md-12 text-center more">
+                <a href="#">
+                    Get Woko
+                </a>
+            </div>
         </div>
     </div>
 
     <div class="container-fluid findr" id="sectionFindr">
 
         <h2>Findr</h2>
+
         <div class="row">
-            <div class="col-md-5">
+            <div class="col-md-6">
                 <p>
-                    Findr is a simple yet very powerful utility that helps
-                    to write tests in a "wait-style", without accessing
-                    WebDriverWait directly.
+                    You need good tests in order to ship good apps.
                 </p>
                 <p>
-                    The API is slick, easy to use and helps to be DRY and concise.
-                    It uses function composition in order to create chains
-                    of conditions that are evaluated atomically inside a WebDriverWait,
-                    under the hood.
+                    Findr is a simple yet very powerful utility
+                    that helps to write Selenium Web Tests in
+                    a compact and effective fashion.
                 </p>
+                <ul>
+                    <li>Thin layer over Selenium WebDriverWait</li>
+                    <li>Fluent, easy and enjoyable API</li>
+                    <li>Allows for reuse (composition, immutable Findrs...)</li>
+                    <li>Pure Java, extensions for Groovy</li>
+                    <li>Usable from any testing infrastructure</li>
+                    <li>WebDriver builder : easy setup</li>
+                    <li>Out-of-the-box support for JUnit</li>
+                    <li>Allows for video recording of your tests</li>
+                </ul>
             </div>
-            <div class="col-md-7">
-        <pre>// get google
-driver.get("http://www.google.com");
 
-// perform the search
-new Findr(driver)           // create a Findr
-    .elem(By.id("gbqfq"))  // wait for the elem located by id "gbqfq"
-    .sendKeys("pojos on the web", Keys.ENTER);  // type the query
+            <div class="col-md-6">
+                <div role="tabpanel">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#snippetJava" aria-controls="Java" role="tab" data-toggle="tab">Java</a></li>
+                        <li role="presentation"><a href="#snippetGroovy" aria-controls="groovy" role="tab" data-toggle="tab">Groovy</a></li>
+                    </ul>
 
-// check the results
-new Findr(driver)           // create Findr
-    .elem(By.id("ires"))    // wait for elem by id
-    .elemList(By.cssSelector("h3.r")) // wait for a list of elements
-    .at(0)                  // wait for 1st in the list
-    .elem(By.tagName("a"))  // wait for some &lt;a&gt; tag under the first list elem
-    .where(Findrs.textEquals("POJOs on the Web!: Woko")) // wait for the text in the link
-    .eval();    // evaluate the whole stuff ! will block until success, or timeout
-</pre>
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade in active" id="snippetJava">
+
+                            <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// get google</span>
+driver<span style="color: #666666">.</span><span style="color: #7D9029">get</span><span style="color: #666666">(</span><span style="color: #BA2121">&quot;http://www.google.com&quot;</span><span style="color: #666666">);</span>
+
+<span style="color: #408080; font-style: italic">// perform the search</span>
+<span style="color: #008000; font-weight: bold">new</span> <span style="color: #0000FF">Findr</span><span style="color: #666666">(</span>driver<span style="color: #666666">)</span> <span style="color: #408080; font-style: italic">// create a Findr</span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">elem</span><span style="color: #666666">(</span>By<span style="color: #666666">.</span><span style="color: #7D9029">id</span><span style="color: #666666">(</span><span style="color: #BA2121">&quot;gbqfq&quot;</span><span style="color: #666666">))</span> <span style="color: #408080; font-style: italic">// wait for the elem located by id &quot;gbqfq&quot;</span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">sendKeys</span><span style="color: #666666">(</span><span style="color: #BA2121">&quot;pojos on the web&quot;</span><span style="color: #666666">,</span> Keys<span style="color: #666666">.</span><span style="color: #7D9029">ENTER</span><span style="color: #666666">);</span> <span style="color: #408080; font-style: italic">// type the query</span>
+
+<span style="color: #408080; font-style: italic">// check the results</span>
+<span style="color: #008000; font-weight: bold">new</span> <span style="color: #0000FF">Findr</span><span style="color: #666666">(</span>driver<span style="color: #666666">)</span> <span style="color: #408080; font-style: italic">// create Findr</span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">elem</span><span style="color: #666666">(</span>By<span style="color: #666666">.</span><span style="color: #7D9029">id</span><span style="color: #666666">(</span><span style="color: #BA2121">&quot;ires&quot;</span><span style="color: #666666">))</span> <span style="color: #408080; font-style: italic">// wait for elem by id</span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">elemList</span><span style="color: #666666">(</span>By<span style="color: #666666">.</span><span style="color: #7D9029">cssSelector</span><span style="color: #666666">(</span><span style="color: #BA2121">&quot;h3.r&quot;</span><span style="color: #666666">))</span> <span style="color: #408080; font-style: italic">// wait for a list of elements</span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">at</span><span style="color: #666666">(0)</span> <span style="color: #408080; font-style: italic">// wait for 1st in the list</span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">elem</span><span style="color: #666666">(</span>By<span style="color: #666666">.</span><span style="color: #7D9029">tagName</span><span style="color: #666666">(</span><span style="color: #BA2121">&quot;a&quot;</span><span style="color: #666666">))</span> <span style="color: #408080; font-style: italic">// wait for some &lt;a&gt; tag under the first list elem</span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">where</span><span style="color: #666666">(</span>Findrs<span style="color: #666666">.</span><span style="color: #7D9029">textEquals</span><span style="color: #666666">(</span><span style="color: #BA2121">&quot;POJOs on the Web!: Woko&quot;</span><span style="color: #666666">))</span> <span style="color: #408080; font-style: italic">// wait for the text </span>
+  <span style="color: #666666">.</span><span style="color: #7D9029">eval</span><span style="color: #666666">();</span> <span style="color: #408080; font-style: italic">// evaluate the whole stuff ! will block until success, or timeout</span>
+</pre></div>
+
+
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="snippetGroovy">
+
+                            <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">def</span> d <span style="color: #666666">=</span> webDriver
+d<span style="color: #666666">.</span><span style="color: #7D9029">get</span> <span style="color: #BA2121">&#39;http://www.leboncoin.fr&#39;</span>
+d<span style="color: #666666">.</span><span style="color: #7D9029">windowSize</span> <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Dimension<span style="color: #666666">(1400,</span> <span style="color: #666666">1000)</span>
+
+<span style="color: #408080; font-style: italic">// some examples...</span>
+findr<span style="color: #666666">().</span><span style="color: #7D9029">elem</span><span style="color: #666666">(</span>By<span style="color: #666666">.</span><span style="color: #7D9029">id</span><span style="color: #666666">(</span><span style="color: #BA2121">&#39;TableContentBottom&#39;</span><span style="color: #666666">))</span> <span style="color: #666666">+</span> isDisplayed<span style="color: #666666">()</span> <span style="color: #666666">&gt;&gt;</span> eval<span style="color: #666666">()</span>
+$<span style="color: #666666">(</span><span style="color: #BA2121">&#39;#TableContentBottom&#39;</span><span style="color: #666666">)</span> <span style="color: #666666">+</span> isDisplayed<span style="color: #666666">()</span> <span style="color: #666666">&gt;&gt;</span> eval<span style="color: #666666">()</span>
+
+<span style="color: #408080; font-style: italic">// click</span>
+$$<span style="color: #666666">(</span><span style="color: #BA2121">&#39;#TableContentBottom a&#39;</span><span style="color: #666666">)</span> <span style="color: #666666">+</span>
+    attrEquals<span style="color: #666666">(</span><span style="color: #BA2121">&#39;title&#39;</span><span style="color: #666666">,</span> <span style="color: #BA2121">&#39;Alsace&#39;</span><span style="color: #666666">)</span> <span style="color: #666666">+</span>
+    at<span style="color: #666666">(0)</span> <span style="color: #666666">&gt;&gt;</span> click<span style="color: #666666">()</span>
+
+<span style="color: #408080; font-style: italic">// selects</span>
+$<span style="color: #666666">(</span><span style="color: #BA2121">&#39;#search_category&#39;</span><span style="color: #666666">)</span> asSelect<span style="color: #666666">()</span> selectByVisibleText<span style="color: #666666">(</span><span style="color: #BA2121">&#39;Motos&#39;</span><span style="color: #666666">)</span>
+$<span style="color: #666666">(</span><span style="color: #BA2121">&#39;#searcharea&#39;</span><span style="color: #666666">).</span><span style="color: #7D9029">asSelect</span><span style="color: #666666">().</span><span style="color: #7D9029">selectByVisibleText</span><span style="color: #666666">(</span><span style="color: #BA2121">&#39;Toute la France&#39;</span><span style="color: #666666">)</span>
+
+<span style="color: #408080; font-style: italic">// search</span>
+$<span style="color: #666666">(</span><span style="color: #BA2121">&#39;#searchbutton&#39;</span><span style="color: #666666">).</span><span style="color: #7D9029">click</span><span style="color: #666666">()</span>
+</pre></div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 text-center more">
+                <a href="#">
+                    Learn More...
+                </a>
             </div>
         </div>
     </div>
 
     <div class="container-fluid stuff" id="sectionStuff">
         <h2>Goodies</h2>
-        <p>Bla ksjd lksqdj lqj lkqsj lkdj lkdsjlkdsqj dlksqdj dlqkjqsdlkdqs lj </p>
+
+        <p>
+            Here are a few other projects that we dig, maintain, or contribute
+            to.
+        </p>
+
+        <div class="row">
+            <div class="col-md-6">
+
+                <h3>rjar</h3>
+
+                <p>
+                    Recursive Java Archive (jar) Tool
+                </p>
+
+                <p>
+                    <code>rjar</code> is a command-line tool that acts like the regular
+                    <code>jar</code> tool, but recursively ! It is very useful when e.g. using ear
+                    or war files, or any other "jars of jars"...
+                </p>
+
+                <p>
+                    Features :
+                </p>
+                <ul>
+                    <li>
+                        list jar entries recursively : all entries are
+                        displayed including entries of nested jars if any
+                    </li>
+                    <li>
+                        expand a jar recursively : expand the jar and its nested
+                        jars to the specified directory
+                    </li>
+                    <li>
+                        recreate a jar from an expanded rjar : allows to rebuild a jar
+                        with nested jars from an expanded directory structure
+                    </li>
+                    <li>
+                        graphical front-end : tree view of your jars,
+                        with regexp filtering
+                    </li>
+                </ul>
+
+                <div class="more">
+                    <a href="#">
+                        Learn More...
+                    </a>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+
+                <h3>Stripes</h3>
+                <p>Stripes is the best Web MVC for Java.</p>
+                <p>
+                    It's compact, elegant, effective and fun to use.
+                    It has everything you need in order to build webapps :
+                </p>
+                <ul>
+                    <li>Kick-ass Data Binding & Validation</li>
+                    <li>Neat Controller model (ActionBeans)</li>
+                    <li>HTML Tag library (FORMs)</li>
+                    <li>Fully extensible</li>
+                </ul>
+                <blockquote>
+                    Because it doesn't have to suck !
+                </blockquote>
+
+                <div class="more">
+                    <a href="#">
+                        Learn More...
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
 

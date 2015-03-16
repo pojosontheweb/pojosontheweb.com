@@ -59,8 +59,8 @@ h2 {
 
 .more {
     font-family: 'Montserrat Alternates', sans-serif;
-    margin-top: 40px;
-    text-align: center;
+    margin-top: 80px;
+    margin-bottom: 32px;
 }
 
 .more a {
@@ -100,6 +100,14 @@ h2 {
 }
 
 #sectionFindr pre {
-    background-color: black;
-    color: #f5f5f5;
+    border: none;
+}
+
+.tab-content {
+    background: none;
+}
+
+.nav li a,
+.nav li a:hover {
+    color: white;
 }
