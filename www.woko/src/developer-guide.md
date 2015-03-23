@@ -167,7 +167,12 @@ You should not need to, but can also replace this component, in order to use a d
 
 Woko delegates management of the various sub components to an Inversion of Control "container". This allows to plug any component easier, and to manage their dependencies and lifecycle if needed. It also serves as a registry for any optional components, so that they can be accessed everywhere in the application (e.g. from controllers). The woko instance itself is not in the container : instead it holds a reference to the container and retrieves the components from it.
 
-The IoC container is defined by interface `woko.ioc.WokoIocContainer`, and is pluggable. Woko ships with a default implementation, and a [Pico Container](http://picocontainer.codehaus.org) adapter.
+The IoC container is defined by interface `woko.ioc.WokoIocContainer`, and is pluggable.
+
+The IoC container is initialized at application startup (explained below), and is then available everywhere in the app, via `woko.getIoc()`.
+You can either retrieve the components explicitly by calling `ioc.getComponent(key)`, or using `@WokoInject` from your facets.
+
+> Woko ships with a default, fully functional `SimpleIocContainer` implementation, and a [Pico Container](http://picocontainer.codehaus.org) adapter.
 
 # Startup
 
