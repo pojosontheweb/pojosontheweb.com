@@ -1392,7 +1392,7 @@ Here's an example of how you can do this easily (Groovy again), with your own Ob
 
 ## Web Tests
 
-TODO explain how to setup the project for selenium tests.
+Woko uses [Findr](http://pojosontheweb.com/#findr) for our Web Tests. We encourage you to do the same :)
 
 # Security
 
